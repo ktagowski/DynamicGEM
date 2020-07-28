@@ -75,19 +75,25 @@ class DynAERNN(DynamicGraphEmbedding):
         t1 = time()
         ###################################
         # TensorFlow wizardry
-        config = tf.ConfigProto()
-        # Don't pre-allocate memory; allocate as-needed
-        config.gpu_options.allow_growth = True
-        # Only allow a total of half the GPU memory to be allocated
-        config.gpu_options.per_process_gpu_memory_fraction = 0.2
-        # Create a session to pass the above configuration
-        # sess=tf.Session(config=config)
-        # Create a tensorflow debugger wrapper
-        # sess = tf_debug.LocalCLIDebugWrapperSession(sess)
-        # Create a session with the above options specified.
-        KBack.tensorflow_backend.set_session(tf.Session(config=config))
-        # KBack.tensorflow_backend.set_session(sess)
-        ###################################
+#         config = tf.ConfigProto()
+#         # Don't pre-allocate memory; allocate as-needed
+#         config.gpu_options.allow_growth = True
+#         # Only allow a total of half the GPU memory to be allocated
+#         config.gpu_options.per_process_gpu_memory_fraction = 0.2
+#         # Create a session to pass the above configuration
+#         # sess=tf.Session(config=config)
+#         # Create a tensorflow debugger wrapper
+#         # sess = tf_debug.LocalCLIDebugWrapperSession(sess)
+#         # Create a session with the above options specified.
+#         KBack.tensorflow_backend.set_session(tf.Session(config=config))
+#         # KBack.tensorflow_backend.set_session(sess)
+#         ###################################
+
+        # Setup one thread only
+        config = tf.ConfigProto(intra_op_parallelism_threads=1, 
+                                inter_op_parallelism_threads=1)
+        session = tf.Session(graph=tf.get_default_graph(), config=config)
+        KBack.set_session(session)
 
         # Generate encoder, decoder and autoencoder
         self._num_iter = self._n_iter
